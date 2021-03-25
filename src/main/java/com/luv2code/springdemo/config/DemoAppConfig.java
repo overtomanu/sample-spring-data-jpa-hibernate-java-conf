@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -26,12 +28,14 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import com.luv2code.springdemo.audit.AuditorAwareImpl;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement
 @EnableJpaRepositories("com.luv2code.springdemo.dao")
+@EnableJpaAuditing
 @ComponentScan("com.luv2code.springdemo")
 @PropertySource({ "classpath:persistence-mysql.properties",
 		"classpath:security-persistence-mysql.properties" })
@@ -217,4 +221,7 @@ public class DemoAppConfig implements WebMvcConfigurer {
 				.addResourceLocations("/webjars/").setCachePeriod(3600)
 				.resourceChain(true); // !!! very important
 	}
+
+	@Bean
+	AuditorAware<String> auditorProvider() { return new AuditorAwareImpl(); }
 }
