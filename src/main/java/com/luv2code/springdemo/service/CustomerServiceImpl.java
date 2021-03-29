@@ -12,10 +12,10 @@ import com.luv2code.springdemo.entity.Customer;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
-	
+
 	@Autowired
 	private CustomerRepository customerRepository;
-	
+
 	@Override
 	@Transactional
 	public List<Customer> getCustomers() {
@@ -34,15 +34,12 @@ public class CustomerServiceImpl implements CustomerService {
 	@Override
 	@Transactional
 	public Customer getCustomer(Integer theId) {
-		
 		return customerRepository.findById(theId).orElse(null);
 	}
 
 	@Override
 	@Transactional
 	public void deleteCustomer(Integer theId) {
-		
 		customerRepository.deleteById(theId);
 	}
 }
-
