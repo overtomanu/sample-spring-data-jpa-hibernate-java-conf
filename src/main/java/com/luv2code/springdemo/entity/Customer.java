@@ -3,25 +3,17 @@ package com.luv2code.springdemo.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.springframework.data.jpa.domain.AbstractAuditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import com.luv2code.springdemo.audit.Auditable;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "customer")
-public class Customer extends Auditable<String> {
+public class Customer extends AbstractAuditable<User, Integer> {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	private Integer id;
 
 	@Column(name = "first_name")
 	private String firstName;
@@ -38,9 +30,8 @@ public class Customer extends Auditable<String> {
 
 	public Customer() {}
 
-	public Integer getId() { return id; }
-
-	public void setId(Integer id) { this.id = id; }
+	@Override
+	public void setId(Integer Id) { super.setId(Id); }
 
 	public String getFirstName() { return firstName; }
 
@@ -60,7 +51,8 @@ public class Customer extends Auditable<String> {
 
 	@Override
 	public String toString() {
-		return "Customer [id=" + id + ", firstName=" + firstName + ", lastName="
+		return "Customer [id=" + getId() + ", firstName=" + firstName
+				+ ", lastName="
 				+ lastName + ", email=" + email + ", version=" + version + "]";
 	}
 
@@ -68,7 +60,7 @@ public class Customer extends Auditable<String> {
 	public boolean equals(Object obj) {
 		if (obj == null) { return false; }
 		if (!(obj instanceof Customer)) { return false; }
-		return id.equals(((Customer) obj).getId());
+		return getId().equals(((Customer) obj).getId());
 	}
 
 }

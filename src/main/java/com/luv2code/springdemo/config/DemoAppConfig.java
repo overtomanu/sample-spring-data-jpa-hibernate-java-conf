@@ -1,6 +1,7 @@
 package com.luv2code.springdemo.config;
 
 import java.beans.PropertyVetoException;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -20,6 +21,11 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.ViewResolver;
@@ -28,17 +34,20 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import com.luv2code.springdemo.audit.AuditorAwareImpl;
+import com.luv2code.springdemo.ComponentScanMarker;
+import com.luv2code.springdemo.entity.User;
+import com.luv2code.springdemo.repository.RepositoryPackageMarker;
+import com.luv2code.springdemo.security.UserAwareUserDetails;
+import com.luv2code.springdemo.service.UserService;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement
-@EnableJpaRepositories("com.luv2code.springdemo.dao")
+@EnableJpaRepositories(basePackageClasses = { RepositoryPackageMarker.class })
 @EnableJpaAuditing
-@ComponentScan("com.luv2code.springdemo")
-@PropertySource({ "classpath:persistence-mysql.properties",
-		"classpath:security-persistence-mysql.properties" })
+@ComponentScan(basePackageClasses = { ComponentScanMarker.class })
+@PropertySource({ "classpath:persistence-mysql.properties" })
 public class DemoAppConfig implements WebMvcConfigurer {
 
 	@Autowired
@@ -120,14 +129,28 @@ public class DemoAppConfig implements WebMvcConfigurer {
 		// set hibernate properties
 		Properties props = new Properties();
 
+
+		// update operation is not in JPA standard for
+		// javax.persistence.schema-generation.database.action
+		// load data script is not called if action is update
+
+		// use below property values to get similar behavior without using
+		// ContextRefreshedEvent event listener
+
+		// javax.persistence.schema-generation.database.action, create or
+		// drop-and-create
+		// props.setProperty("javax.persistence.schema-generation.database.action","drop-and-create");
+		// props.setProperty("javax.persistence.sql-load-script-source","seed_data.sql");
+
+		props.setProperty("javax.persistence.schema-generation.database.action",
+				"update");
+
 		props.setProperty("hibernate.dialect",
 				env.getProperty("hibernate.dialect"));
-		// setting below property may not be required since we are doing
+		// setting below property may not be required if we are doing
 		// adapter.setShowSql
 		props.setProperty("hibernate.show_sql",
 				env.getProperty("hibernate.show_sql"));
-		props.setProperty("javax.persistence.schema-generation.database.action",
-				"update");
 
 		return props;
 	}
@@ -145,56 +168,6 @@ public class DemoAppConfig implements WebMvcConfigurer {
 	@Bean
 	public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
 		return new PersistenceExceptionTranslationPostProcessor();
-	}
-
-	// define a bean for our security datasource
-
-	@Bean
-	public DataSource securityDataSource() {
-
-		// create connection pool
-		ComboPooledDataSource securityDataSource = new ComboPooledDataSource();
-
-		// set the jdbc driver class
-
-		try {
-			securityDataSource
-					.setDriverClass(env.getProperty("security.jdbc.driver"));
-		} catch (PropertyVetoException exc) {
-			throw new RuntimeException(exc);
-		}
-
-		// log the connection props
-		// for sanity's sake, log this info
-		// just to make sure we are REALLY reading data from properties file
-
-		logger.info(">>> security.jdbc.url="
-				+ env.getProperty("security.jdbc.url"));
-		logger.info(">>> security.jdbc.user="
-				+ env.getProperty("security.jdbc.user"));
-
-		// set database connection props
-
-		securityDataSource.setJdbcUrl(env.getProperty("security.jdbc.url"));
-		securityDataSource.setUser(env.getProperty("security.jdbc.user"));
-		securityDataSource
-				.setPassword(env.getProperty("security.jdbc.password"));
-
-		// set connection pool props
-
-		securityDataSource.setInitialPoolSize(
-				getIntProperty("security.connection.pool.initialPoolSize"));
-
-		securityDataSource.setMinPoolSize(
-				getIntProperty("security.connection.pool.minPoolSize"));
-
-		securityDataSource.setMaxPoolSize(
-				getIntProperty("security.connection.pool.maxPoolSize"));
-
-		securityDataSource.setMaxIdleTime(
-				getIntProperty("security.connection.pool.maxIdleTime"));
-
-		return securityDataSource;
 	}
 
 	// need a helper method
@@ -223,5 +196,18 @@ public class DemoAppConfig implements WebMvcConfigurer {
 	}
 
 	@Bean
-	AuditorAware<String> auditorProvider() { return new AuditorAwareImpl(); }
+	public static PasswordEncoder passwordEncoder() {
+		return PasswordEncoderFactories
+				.createDelegatingPasswordEncoder();
+	}
+
+	@Bean
+	AuditorAware<User> auditorProvider(UserService userService) {
+		return () -> Optional.ofNullable(SecurityContextHolder.getContext())
+				.map(SecurityContext::getAuthentication)
+				.filter(Authentication::isAuthenticated)
+				.map(Authentication::getPrincipal)
+				.map((Object principalObj) -> (
+						((UserAwareUserDetails) principalObj).getUser()));
+	}
 }

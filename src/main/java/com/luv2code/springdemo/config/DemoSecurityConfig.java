@@ -1,16 +1,13 @@
 package com.luv2code.springdemo.config;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
@@ -19,14 +16,16 @@ public class DemoSecurityConfig extends WebSecurityConfigurerAdapter {
 	// add a reference to our security data source
 	
 	@Autowired
-	private DataSource securityDataSource;
-	
+	private UserDetailsService userDetailsService;
+
+	@Autowired
+	private PasswordEncoder delegatingPasswordEncoder;
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-
-		// use jdbc authentication ... oh yeah!!!
 		
-		auth.jdbcAuthentication().dataSource(securityDataSource);
+		auth.userDetailsService(userDetailsService)
+				.passwordEncoder(delegatingPasswordEncoder);
 
 	}
 
@@ -50,16 +49,6 @@ public class DemoSecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 			.exceptionHandling().accessDeniedPage("/access-denied");
 		
-	}
-	
-	@Bean
-	public UserDetailsManager userDetailsManager() {
-		
-		JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager();
-		
-		jdbcUserDetailsManager.setDataSource(securityDataSource);
-		
-		return jdbcUserDetailsManager; 
 	}
 		
 }

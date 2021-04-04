@@ -1,18 +1,11 @@
 package com.luv2code.springdemo.controller;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,17 +16,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.luv2code.springdemo.user.CrmUser;
+import com.luv2code.springdemo.entity.User;
+import com.luv2code.springdemo.model.CrmUser;
+import com.luv2code.springdemo.service.UserService;
 
 @Controller
 @RequestMapping("/register")
 public class RegistrationController {
 	
 	@Autowired
-	private UserDetailsManager userDetailsManager;
-	
-	private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-	
+	private UserService userService;
+
 	private Logger logger = Logger.getLogger(getClass().getName());
 	
 	@InitBinder
@@ -91,21 +84,11 @@ public class RegistrationController {
 		// let's get down to business!!!
 		//
 		
-		// encrypt the password
-        String encodedPassword = passwordEncoder.encode(theCrmUser.getPassword());
-
-        // prepend the encoding algorithm id
-        encodedPassword = "{bcrypt}" + encodedPassword;
-                 
-		// give user default role of "employee"
-        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_EMPLOYEE");
-
-        // create user object (from Spring Security framework)
-        User tempUser = new User(userName, encodedPassword, authorities);
-
-        // save user in the database
-        userDetailsManager.createUser(tempUser);		
+		User newUserEntity = new User(theCrmUser.getUserName(),
+				theCrmUser.getPassword(), Boolean.TRUE);
 		
+		userService.saveUser(newUserEntity);
+
         logger.info("Successfully created user: " + userName);
         
         return "registration-confirmation";		
@@ -116,7 +99,7 @@ public class RegistrationController {
 		logger.info("Checking if user exists: " + userName);
 		
 		// check the database if the user already exists
-		boolean exists = userDetailsManager.userExists(userName);
+		boolean exists = userService.findUserByUserName(userName) != null;
 		
 		logger.info("User: " + userName + ", exists: " + exists);
 		

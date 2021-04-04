@@ -1,4 +1,4 @@
-package com.luv2code.springdemo.user;
+package com.luv2code.springdemo.model;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

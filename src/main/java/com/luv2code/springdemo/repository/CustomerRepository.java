@@ -1,4 +1,4 @@
-package com.luv2code.springdemo.dao;
+package com.luv2code.springdemo.repository;
 
 import org.springframework.data.repository.CrudRepository;
 
