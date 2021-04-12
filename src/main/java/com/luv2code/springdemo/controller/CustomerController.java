@@ -10,12 +10,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 
 import com.luv2code.springdemo.entity.Customer;
 import com.luv2code.springdemo.service.CustomerService;
 
 @Controller
 @RequestMapping("/customer")
+@SessionAttributes("customer")
 public class CustomerController {
 
 	// need to inject our customer service
@@ -47,7 +50,9 @@ public class CustomerController {
 
 	@PostMapping("/saveCustomer")
 	public String saveCustomer(
-			@ModelAttribute("customer") Customer theCustomer) {
+			@ModelAttribute("customer") Customer theCustomer,
+			SessionStatus sessionStatus) {
+		/*
 		Customer existingCustomerObj = theCustomer.getId() == null ? null
 				: customerService.getCustomer(theCustomer.getId());
 		if (existingCustomerObj != null) {
@@ -59,6 +64,9 @@ public class CustomerController {
 		} else {
 			customerService.saveCustomer(theCustomer);
 		}
+		*/
+		customerService.saveCustomer(theCustomer);
+		sessionStatus.setComplete();
 		return "redirect:/customer/list";
 	}
 
