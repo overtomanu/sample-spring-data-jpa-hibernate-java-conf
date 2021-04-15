@@ -9,4 +9,5 @@ sample spring data jpa project with hibernate
 - Authentication based on users fetched by spring data JPA
 - Uses DelegatingPasswordEncoder to support passwords encoded in multiple formats
 - Loads initial authentication seed data on application startup
-- Can update multiple entity objects in multiple tabs in same session
+- Spring MVC conversational support - Can update multiple entity objects in multiple tabs in same session
+- Entity has UUID id field generated in JPA agnostic way.
