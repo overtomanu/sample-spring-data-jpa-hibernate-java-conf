@@ -71,7 +71,7 @@ public class CustomerController {
 	}
 
 	@GetMapping("/showFormForUpdate")
-	public String showFormForUpdate(@RequestParam("customerId") Integer theId,
+	public String showFormForUpdate(@RequestParam("customerId") String theId,
 			Model theModel) {
 
 		// get the customer from our service
@@ -85,7 +85,7 @@ public class CustomerController {
 	}
 
 	@GetMapping("/delete")
-	public String deleteCustomer(@RequestParam("customerId") int theId) {
+	public String deleteCustomer(@RequestParam("customerId") String theId) {
 
 		// delete the customer
 		customerService.deleteCustomer(theId);

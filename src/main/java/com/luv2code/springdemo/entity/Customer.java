@@ -1,27 +1,41 @@
 package com.luv2code.springdemo.entity;
 
+import java.util.UUID;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import org.springframework.data.jpa.domain.AbstractAuditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.luv2code.springdemo.audit.Auditable;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "customer")
-public class Customer extends AbstractAuditable<User, Integer> {
+public class Customer extends Auditable<String> {
 
+	/*
+	Extending org.springframework.data.jpa.domain.AbstractAuditable gives error
+	"Specified key was too long" if we use string as id column with hibernate JPA on mysql db
+	So creating our own mappedSuperClass for auditing and defining Id column in subclass
+	*/
 
-	@Column(name = "first_name")
+	@Id
+	@Column(name = "id", length = 40)
+	private String id;
+
+	@Column(name = "first_name", length = 127)
 	private String firstName;
 
-	@Column(name = "last_name")
+	@Column(name = "last_name", length = 127)
 	private String lastName;
 
-	@Column(name = "email")
+	@Column(name = "email", length = 240, unique = true)
 	private String email;
 
 	@Version
@@ -30,8 +44,10 @@ public class Customer extends AbstractAuditable<User, Integer> {
 
 	public Customer() {}
 
-	@Override
-	public void setId(Integer Id) { super.setId(Id); }
+
+	public String getId() { return id; }
+
+	public void setId(String id) { this.id = id; }
 
 	public String getFirstName() { return firstName; }
 
@@ -61,6 +77,11 @@ public class Customer extends AbstractAuditable<User, Integer> {
 		if (obj == null) { return false; }
 		if (!(obj instanceof Customer)) { return false; }
 		return getId().equals(((Customer) obj).getId());
+	}
+
+	@PrePersist
+	public void prePersist() {
+		setId(UUID.randomUUID().toString());
 	}
 
 }

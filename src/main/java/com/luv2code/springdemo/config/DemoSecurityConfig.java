@@ -20,8 +20,6 @@ import com.luv2code.springdemo.conversationSupport.SessionConversationAspect;
 @EnableAspectJAutoProxy
 public class DemoSecurityConfig extends WebSecurityConfigurerAdapter {
 
-	// add a reference to our security data source
-	
 	@Autowired
 	private UserDetailsService userDetailsService;
 

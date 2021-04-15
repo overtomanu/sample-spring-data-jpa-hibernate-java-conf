@@ -10,8 +10,8 @@ public interface CustomerService {
 
 	public void saveCustomer(Customer theCustomer);
 
-	public Customer getCustomer(Integer theId);
+	public Customer getCustomer(String theId);
 
-	public void deleteCustomer(Integer theId);
+	public void deleteCustomer(String theId);
 	
 }

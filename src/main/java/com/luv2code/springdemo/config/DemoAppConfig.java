@@ -1,7 +1,6 @@
 package com.luv2code.springdemo.config;
 
 import java.beans.PropertyVetoException;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -21,9 +20,6 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -35,10 +31,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.luv2code.springdemo.ComponentScanMarker;
-import com.luv2code.springdemo.entity.User;
+import com.luv2code.springdemo.audit.AuditorAwareImpl;
 import com.luv2code.springdemo.repository.RepositoryPackageMarker;
-import com.luv2code.springdemo.security.UserAwareUserDetails;
-import com.luv2code.springdemo.service.UserService;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 @Configuration
@@ -201,6 +195,7 @@ public class DemoAppConfig implements WebMvcConfigurer {
 				.createDelegatingPasswordEncoder();
 	}
 
+	/*
 	@Bean
 	AuditorAware<User> auditorProvider(UserService userService) {
 		return () -> Optional.ofNullable(SecurityContextHolder.getContext())
@@ -210,4 +205,8 @@ public class DemoAppConfig implements WebMvcConfigurer {
 				.map((Object principalObj) -> (
 						((UserAwareUserDetails) principalObj).getUser()));
 	}
+	*/
+
+	@Bean
+	AuditorAware<String> auditorProvider() { return new AuditorAwareImpl(); }
 }

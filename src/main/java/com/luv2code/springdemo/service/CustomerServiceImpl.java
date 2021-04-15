@@ -33,13 +33,13 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	@Transactional
-	public Customer getCustomer(Integer theId) {
+	public Customer getCustomer(String theId) {
 		return customerRepository.findById(theId).orElse(null);
 	}
 
 	@Override
 	@Transactional
-	public void deleteCustomer(Integer theId) {
+	public void deleteCustomer(String theId) {
 		customerRepository.deleteById(theId);
 	}
 }
