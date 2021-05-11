@@ -1,4 +1,4 @@
-package com.luv2code.springdemo.component;
+package com.luv2code.springdemo.application;
 
 import javax.sql.DataSource;
 

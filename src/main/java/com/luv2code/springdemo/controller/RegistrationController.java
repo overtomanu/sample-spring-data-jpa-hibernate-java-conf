@@ -2,8 +2,6 @@ package com.luv2code.springdemo.controller;
 
 import java.util.logging.Logger;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
@@ -19,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.luv2code.springdemo.entity.User;
 import com.luv2code.springdemo.model.CrmUser;
 import com.luv2code.springdemo.service.UserService;
+
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/register")
