@@ -1,6 +1,11 @@
 package com.luv2code.springdemo.test;
 
+import static org.junit.Assert.assertEquals;
+
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -40,9 +45,52 @@ public class CustomerCRUDTest {
 		customerService.saveCustomer(theCustomer);
 		String query = "select * from customer where id='" + theCustomer.getId() + "'";
 		TestUtils.executeQueryAndVerifySingleRow(testDataSource.getConnection(),
-				query,
-				Map.of("first_name", "testCustomerFirstName", "email",
-						"testCustomer@test.com"));
+				query, 1,
+				Map.of("first_name", theCustomer.getFirstName(), "email",
+						theCustomer.getEmail()));
+	}
+	
+	@Test
+	public void getAndUpdateCustomerTest() throws SQLException {
+
+		String customerId = "id753";
+		String customerFirstName = "test2FirstName";
+		String insertSQL = "INSERT INTO customer "
+				+ "(id,first_name,last_name,email,version,created_by,creation_date,last_updated_by,last_update_date) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		Connection connection = testDataSource.getConnection();
+
+		TestUtils.insertSingleRow(connection, insertSQL,
+				customerId, customerFirstName, "test2LastName",
+				"test2@test.com", 2, "anonymous", LocalDateTime.now(),
+				"anonymous", LocalDateTime.now());
+		Customer customer = customerService.getCustomer(customerId);
+		assertEquals(customerFirstName, customer.getFirstName());
+		customerFirstName = "test2NameUpdated";
+		customer.setFirstName(customerFirstName);
+		customerService.saveCustomer(customer);
+		TestUtils.executeQueryAndVerifySingleRow(connection,
+				"select * from customer where id='" + customerId + "'",
+				1, Map.of("first_name", customerFirstName));
+	}
+
+	@Test
+	public void deleteCustomerTest() throws SQLException {
+		String customerId = "idDelete";
+		String customerFirstName = "test3FirstName";
+		String insertSQL = "INSERT INTO customer "
+				+ "(id,first_name,last_name,email,version,created_by,creation_date,last_updated_by,last_update_date) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		Connection connection = testDataSource.getConnection();
+
+		TestUtils.insertSingleRow(connection, insertSQL, customerId,
+				customerFirstName, "test3LastName", "test3@test.com", 2,
+				"anonymous", LocalDateTime.now(), "anonymous",
+				LocalDateTime.now());
+		customerService.deleteCustomer(customerId);
+		TestUtils.executeQueryAndVerifySingleRow(connection,
+				"select * from customer where id='" + customerId + "'", 0,
+				new HashMap<String, Object>());
 	}
 
 }
