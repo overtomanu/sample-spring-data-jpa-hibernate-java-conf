@@ -72,6 +72,7 @@ public class CustomerCRUDTest {
 		TestUtils.executeQueryAndVerifySingleRow(connection,
 				"select * from customer where id='" + customerId + "'",
 				1, Map.of("first_name", customerFirstName));
+		connection.close();
 	}
 
 	@Test
@@ -91,6 +92,7 @@ public class CustomerCRUDTest {
 		TestUtils.executeQueryAndVerifySingleRow(connection,
 				"select * from customer where id='" + customerId + "'", 0,
 				new HashMap<String, Object>());
+		connection.close();
 	}
 
 }

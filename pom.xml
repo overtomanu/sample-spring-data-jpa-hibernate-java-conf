@@ -9,9 +9,10 @@
 
 	<properties>
 		<springframework.version>5.3.6</springframework.version>
-		<springsecurity.version>5.4.5</springsecurity.version>
+		<springsecurity.version>5.4.6</springsecurity.version>
 		<springdata.bom.version>2021.0.0</springdata.bom.version>
 		<junit.version>5.7.1</junit.version>
+		<mockito.version>3.10.0</mockito.version>
 		<hibernate.version>5.4.30.Final</hibernate.version>
 		<mysql.connector.version>8.0.23</mysql.connector.version>
 		<c3po.version>0.9.5.5</c3po.version>
@@ -35,20 +36,17 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
-			<version>${springsecurity.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
-			<version>${springsecurity.version}</version>
 		</dependency>
 
 		<!-- Add Spring Security Taglibs support -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-taglibs</artifactId>
-			<version>${springsecurity.version}</version>
 		</dependency>
 
 		<!-- Spring Transactions -->
@@ -58,7 +56,6 @@
 		</dependency>
 
 		<!-- Spring Data JPA for supporting hibernate or eclipselink -->
-		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa -->
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-jpa</artifactId>
@@ -92,7 +89,6 @@
 		</dependency>
 
 		<!-- Hibernate Validator -->
-		<!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
@@ -160,6 +156,7 @@
 		    <groupId>org.apache.tomcat</groupId>
 		    <artifactId>tomcat-jasper-el</artifactId>
 		    <version>10.0.5</version>
+		    <scope>provided</scope>
 		</dependency>
 		<!-- EXPRESSION LANGUAGE - END-->
  		
@@ -170,21 +167,18 @@
 		</dependency>
 
 		<!-- javascript webjars -->
-		<!-- https://mvnrepository.com/artifact/org.webjars/webjars-locator -->
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>webjars-locator</artifactId>
 			<version>0.40</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.webjars/jquery -->
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>jquery</artifactId>
 			<version>3.6.0</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.webjars/bootstrap -->
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap</artifactId>
@@ -206,7 +200,6 @@
 			<version>1.7.30</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.slf4j/jul-to-slf4j -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jul-to-slf4j</artifactId>
@@ -218,7 +211,7 @@
 			<artifactId>logback-classic</artifactId>
 			<version>1.2.3</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.codehaus.janino/janino -->
+
 		<dependency>
 			<groupId>org.codehaus.janino</groupId>
 			<artifactId>janino</artifactId>
@@ -264,6 +257,20 @@
 			<groupId>org.junit.vintage</groupId>
 			<artifactId>junit-vintage-engine</artifactId>
 			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.mockito</groupId>
+		    <artifactId>mockito-core</artifactId>
+		    <version>${mockito.version}</version>
+		    <scope>test</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.mockito</groupId>
+		    <artifactId>mockito-junit-jupiter</artifactId>
+		    <version>${mockito.version}</version>
+		    <scope>test</scope>
 		</dependency>
 
 
@@ -318,6 +325,14 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<dependency>
+			    <groupId>org.springframework.security</groupId>
+			    <artifactId>spring-security-bom</artifactId>
+			    <version>${springsecurity.version}</version>
+			    <type>pom</type>
+			    <scope>import</scope>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 

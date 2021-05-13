@@ -21,9 +21,14 @@ import com.luv2code.springdemo.service.CustomerService;
 @SessionAttributes("customer")
 public class CustomerController {
 
+	private CustomerService customerService;
+
 	// need to inject our customer service
 	@Autowired
-	private CustomerService customerService;
+	public CustomerController(CustomerService customerService) {
+		super();
+		this.customerService = customerService;
+	}
 
 	@GetMapping("/list")
 	public String listCustomers(Model theModel) {

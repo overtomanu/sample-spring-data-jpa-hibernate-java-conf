@@ -14,9 +14,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.luv2code.springdemo.audit.Auditable;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "customer")
+@Builder
+@AllArgsConstructor
 public class Customer extends Auditable<String> {
 
 	/*
