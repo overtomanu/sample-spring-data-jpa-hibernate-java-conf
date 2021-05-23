@@ -12,4 +12,4 @@ sample spring data jpa project with hibernate
 - Spring MVC conversational support - Can update multiple entity objects in multiple tabs in same session
 - Entity has UUID id field generated in JPA agnostic way.
 - Doesn't use any library from spring boot
-- Has integration tests for data repositories and unit tests for controllers
+- Has integration tests for data repositories using in memory db and unit tests for controllers
