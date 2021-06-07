@@ -338,7 +338,7 @@
 
 	<!-- Add support for Maven WAR Plugin -->
 	<build>
-		<finalName>sample-spring-data-jpa-hibernate-java-conf</finalName>
+		<finalName>${artifactId}</finalName>
 
 		<pluginManagement>
 			<plugins>
